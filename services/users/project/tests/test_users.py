@@ -10,7 +10,7 @@ from project import db
 from project.api.models import User
 
 def add_user(username, email, address, phone, age):
-    user = User(username=username, email=email, address=address, phone=phone, age=age)
+    user = User(username=username, email=email, address=address, phone=phone, age=age)    
     db.session.add(user)
     db.session.commit()
     return user
