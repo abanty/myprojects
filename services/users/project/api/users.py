@@ -16,6 +16,7 @@ def ping_pong():
         'mensaje': 'pong!!!'
     })
 
+
 @users_blueprint.route('/users', methods=['POST'])
 def add_user():
     post_data = request.get_json()
@@ -78,6 +79,7 @@ def get_single_user(user_id):
     except ValueError:
         return jsonify(response_object), 404
 
+
 @users_blueprint.route('/users', methods=['GET'])
 def get_all_users():
     """Get all users"""
@@ -88,6 +90,7 @@ def get_all_users():
         }
     }
     return jsonify(response_object), 200
+
 
 @users_blueprint.route('/', methods=['GET', 'POST'])
 def index():

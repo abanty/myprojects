@@ -1,10 +1,21 @@
 # services/users/manage.py
 import unittest
-
+import coverage
 from flask.cli import FlaskGroup
 
 from project import create_app, db
 from project.api.models import User
+
+# configurando informes de covertura con coverage 4.5.1
+COV = coverage.coverage(
+    branch=True,
+    include='project/*',
+    omit=[
+        'project/tests/*',
+        'project/config.py',
+    ]
+)
+COV.start()
 
 app = create_app()
 cli = FlaskGroup(create_app=create_app)
@@ -31,6 +42,21 @@ def seed_db():
     db.session.add(User(username='Jesus', email="jesusabanto@upeu.edu.pe", address="Alameda", phone="Dos", age="age"))
     db.session.add(User(username='Marcos', email="examensoftware@upeu.edu.pe", address="Huachipa", phone="cuatro", age="as"))
     db.session.commit()
+
+@cli.command()
+def cov():
+    """Ejecuta las pruebas unitarias con covertura."""
+    tests = unittest.TestLoader().discover('project/tests')
+    result = unittest.TextTestRunner(verbosity=2).run(tests)
+    if result.wasSuccessful():
+        COV.stop()
+        COV.save()
+        print('Resumen de covertura:')
+        COV.report()
+        COV.html_report()
+        COV.erase()
+        return 0
+    return 1
 
 if __name__ == "__main__":
     cli()

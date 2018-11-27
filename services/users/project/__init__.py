@@ -1,18 +1,12 @@
-# services/users/project/__init__.py
-
 import os
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
-
 from flask_cors import CORS
 
-# instanciando la
-#db = SQLAlchemy(app)
 db = SQLAlchemy()
 
 
 def create_app(script_info=None):
-    
     # instanciando la app
     app = Flask(__name__)
 
@@ -25,7 +19,6 @@ def create_app(script_info=None):
 
     # configurando extensiones
     db.init_app(app)
-  
 
     # registrando blueprints
     from project.api.users import users_blueprint
@@ -34,6 +27,5 @@ def create_app(script_info=None):
     # contexto shell para flask cli
     @app.shell_context_processor
     def ctx():
-        return {'app':app, 'db': db}
-
+        return {'app': app, 'db': db}
     return app

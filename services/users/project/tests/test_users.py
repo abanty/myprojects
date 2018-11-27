@@ -1,26 +1,21 @@
-# services/users/project/tests/test_users.py
-
-
 import json
 import unittest
-
 from project.tests.base import BaseTestCase
-
 from project import db
 from project.api.models import User
 
+
 def add_user(username, email, address, phone, age):
-    user = User(username=username, email=email, address=address, phone=phone, age=age)    
+    user = User(username=username, email=email,
+        address=address, phone=phone, age=age)
     db.session.add(user)
     db.session.commit()
     return user
 
 
 class TestUserService(BaseTestCase):
-    """Pruebas para el servicio Users. """
 
     def test_users(self):
-        """comprobado que la ruta /ping funcione correctamente."""
         response = self.client.get('/users/ping')
         data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 200)
@@ -28,7 +23,6 @@ class TestUserService(BaseTestCase):
         self.assertIn('satisfactorio', data['estado'])
 
     def test_add_user(self):
-        """Asegúrese de que se pueda agregar un nuevo usuario a la db."""
         with self.client:
             response = self.client.post(
                 '/users',
@@ -47,7 +41,6 @@ class TestUserService(BaseTestCase):
             self.assertIn('satisfactorio', data['estado'])
 
     def test_add_user_invalid_json(self):
-        """Asegurando de que se lance un error cuando el objeto JSON esta vacío."""
         with self.client:
             response = self.client.post(
                 '/users',
@@ -60,13 +53,9 @@ class TestUserService(BaseTestCase):
             self.assertIn('falló', data['estado'])
 
     def test_add_user_invalid_json_keys(self):
-        """
-        Asegurando que se produce un error si el objeto JSON no tiene una clave de nombre de usuario.
-        """
         with self.client:
             response = self.client.post(
-                '/users',
-                data=json.dumps({'email':'jesusabanto@upeu.edu.pe'}),
+                '/users', data = json.dumps({'email': 'jesusabanto@upeu.edu.pe'}),
                 content_type = 'application/json'
             )
             data = json.loads(response.data.decode())
@@ -75,7 +64,6 @@ class TestUserService(BaseTestCase):
             self.assertIn('falló', data['estado'])
 
     def test_add_user_duplicate_email(self):
-        """Asegurando que se produce un error si el email ya existe."""
         with self.client:
             self.client.post(
                 '/users',
@@ -104,13 +92,9 @@ class TestUserService(BaseTestCase):
             self.assertIn(
                 'Disculpe, ese email ya existe.', data['mensaje'])
             self.assertIn('falló', data['estado'])
-    
+
     def test_single_user(self):
-        """Asegurando de que el usuario individual se comporte correctamente."""
-        #user = User(username='Jesus', email='jesusabanto@upeu.edu.pe', address='Alameda', phone='dos', age='age')
-        #db.session.add(user)
-        #db.session.commit()
-        user = add_user('Jesus','jesusabanto@upeu.edu.pe','Alameda','dos','age')
+        user = add_user('Jesus', 'jesusabanto@upeu.edu.pe', 'Alameda', 'dos', 'age')
         with self.client:
             response = self.client.get(f'/users/{user.id}')
             data = json.loads(response.data.decode())
@@ -123,9 +107,8 @@ class TestUserService(BaseTestCase):
             self.assertIn('satisfactorio', data['estado'])
 
     def test_all_users(self):
-        """Asegurando obtener todos los usuarios correctamente."""
-        add_user('Jesus','jesusabanto@upeu.edu.pe','Alameda','dos','age')
-        add_user('Marcos','examensoftware@upeu.edu.pe','Huachipa','cuatro','as')
+        add_user('Jesus', 'jesusabanto@upeu.edu.pe', 'Alameda', 'dos', 'age')
+        add_user('Marcos', 'examensoftware@upeu.edu.pe', 'Huachipa', 'cuatro', 'as')
         with self.client:
             response = self.client.get('/users')
             data = json.loads(response.data.decode())
@@ -144,7 +127,6 @@ class TestUserService(BaseTestCase):
             self.assertIn('satisfactorio', data['estado'])
 
     def test_single_user_no_id(self):
-        """Asegúrese de que se arroje un error si no se proporciona una identificación."""
         with self.client:
             response = self.client.get('/users/blah')
             data = json.loads(response.data.decode())
@@ -153,27 +135,22 @@ class TestUserService(BaseTestCase):
             self.assertIn('fallo', data['estado'])
 
     def test_single_user_incorrect_id(self):
-        """Asegurando de que se arroje un error si la identificación no existe."""
         with self.client:
             response = self.client.get('/users/999')
             data = json.loads(response.data.decode())
             self.assertEqual(response.status_code, 404)
             self.assertIn('Usuario no existe', data['mensaje'])
             self.assertIn('fallo', data['estado'])
-    
+
     def test_main_no_users(self):
-        """Ensure the main route behaves correctly when no users have been
-        added to the database."""
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Ingreso usuario - Arquitectura Software Abanto', response.data)
         self.assertIn(b'<td>No users!</td>', response.data)
 
     def test_main_with_users(self):
-        """Ensure the main route behaves correctly when users have been
-        added to the database."""
-        add_user('Jesus','jesusabanto@upeu.edu.pe','Alameda','dos','age')
-        add_user('Marcos','examensoftware@upeu.edu.pe','Huachipa','cuatro','as')
+        add_user('Jesus', 'jesusabanto@upeu.edu.pe', 'Alameda', 'dos', 'age')
+        add_user('Marcos', 'examensoftware@upeu.edu.pe0', 'Huachipa', 'cuatro', 'as')
         with self.client:
             response = self.client.get('/')
             self.assertEqual(response.status_code, 200)
@@ -183,17 +160,19 @@ class TestUserService(BaseTestCase):
             self.assertIn(b'Marcos', response.data)
 
     def test_main_add_user(self):
-        """Ensure a new user can be added to the database."""
         with self.client:
             response = self.client.post(
                 '/',
-                data=dict(username='Jesus', email='jesusabanto@upeu.edu.pe', address='Alameda', phone='dos', age='age'),
+                data=dict(username='Jesus', email='jesusabanto@upeu.edu.pe',
+                          address='Alameda', phone='dos', age='age'),
                 follow_redirects=True
             )
             self.assertEqual(response.status_code, 200)
-            self.assertIn(b'Ingreso usuario - Arquitectura Software Abanto', response.data)
+            self.assertIn(b'Ingreso usuario - Arquitectura Software Abanto', 
+                response.data)
             self.assertNotIn(b'<p>No users!</p>', response.data)
             self.assertIn(b'Jesus', response.data)
+
 
 if __name__ == '__main__':
     unittest.main()
