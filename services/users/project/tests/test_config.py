@@ -9,7 +9,8 @@ from flask_testing import TestCase
 
 from project import create_app
 
-app=create_app()
+
+app = create_app()
 
 
 class TestDevelopmentConfig(TestCase):

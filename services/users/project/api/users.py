@@ -37,7 +37,12 @@ def add_user():
     try:
         user = User.query.filter_by(email=email).first()
         if not user:
-            db.session.add(User(username=username, email=email, address=address, phone=phone, age=age))
+            db.session.add(User(
+                username=username,
+                email=email,
+                address=address,
+                phone=phone,
+                age=age))
             db.session.commit()
             response_object['estado'] = 'satisfactorio'
             response_object['mensaje'] = f'{email} fue agregado!!!'
@@ -100,7 +105,12 @@ def index():
         address = request.form['address']
         phone = request.form['phone']
         age = request.form['age']
-        db.session.add(User(username=username, email=email, address=address, phone=phone, age=age))
+        db.session.add(User(
+            username=username,
+            email=email,
+            address=address,
+            phone=phone,
+            age=age))
         db.session.commit()
     users = User.query.all()
     return render_template('index.html', users=users)
